@@ -1,8 +1,10 @@
 #!/bin/bash
 
 
-rm -rf build
-mkdir build
+if [ ! -d "./build" ]
+then
+    mkdir build
+fi
 
 g++ alsa-test.cpp -o build/alsa-test -lasound -lpthread
 
