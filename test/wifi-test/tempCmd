@@ -1,0 +1,23 @@
+/usr/sbin/wpa_supplicant -Dnl80211 -iwlan0 -c /etc/wpa_supplicant.conf &
+
+wpa_cli
+
+scan
+
+scan_result
+
+add_network
+
+set_network id ssid "ssid"
+
+set_network id psk "password"
+
+enable_network id
+
+select_network id
+
+udhcpc -i wlan0
+
+ps -e | grep udhcpc
+
+kill udhcpc_pid

@@ -1,5 +1,5 @@
-#ifndef __PLAY_WAV_H__
-#define __PLAY_WAV_H__
+#ifndef __ALSA_TEST_H__
+#define __ALSA_TEST_H__
 
 typedef struct _wav_riff_t{
     char id[5];               //ID:"RIFF"
@@ -46,4 +46,4 @@ typedef struct _wav_t{
 
 void * playWav( void * p_filePath );
 
-#endif //__PLAY_WAV_H__
+#endif //__ALSA_TEST_H__

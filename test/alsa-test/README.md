@@ -6,4 +6,4 @@
 3. 短时多次播放
 
 ## 编译
-./build-alsa-test.sh
+./build.sh
