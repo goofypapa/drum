@@ -32,7 +32,11 @@ int main(int argc, char ** argv)
     {
         memset(cmdBuffer, 0, sizeof(cmdBuffer));
         cout << "input play file: " << endl;
-        std::cin >> cmdBuffer;
+        // std::cin >> cmdBuffer;
+
+        std::cin.getline(cmdBuffer, sizeof(cmdBuffer));
+
+        cout << "----" << cmdBuffer << endl;
 
         if( !strcmp( cmdBuffer, "quit" ) )
         {
@@ -88,6 +92,14 @@ int main(int argc, char ** argv)
                 cout << "randomPlay fail" << endl;
             }
             continue;
+        }
+
+        cout << "strlen(cmdBuffer):" << strlen(cmdBuffer) << cmdBuffer << endl;
+
+        if( !strlen(cmdBuffer) )
+        {
+            cmdBuffer[0] = '1';
+            cmdBuffer[1] = '\0';
         }
 
         #ifdef __arm__
