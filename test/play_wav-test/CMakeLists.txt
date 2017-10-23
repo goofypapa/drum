@@ -16,20 +16,15 @@ add_definitions(-DCONFIG_CTRL_IFACE -DCONFIG_CTRL_IFACE_UNIX)
 include(CTest)
 enable_testing()
 
-set(WpaDir "../../deps/wpa_supplicant/src")
 
-include_directories(${WpaDir}/common)
-include_directories(${WpaDir}/utils)
 include_directories(../../include)
 include_directories(../../include/core)
 
-# link_libraries(pthread)
+link_libraries(pthread asound)
 
-add_executable(wifi-test wifi-test.cpp
-                        ${WpaDir}/common/wpa_ctrl.c 
-                        ${WpaDir}/utils/os_unix.c
+add_executable(play_wav-test play_wav-test.cpp
                         ../../src/core/ws_common.cpp
-                        ../../src/core/wifi.cpp
+                        ../../src/core/play_wav.cpp
                         )
 
 if(NOT X86_64)

@@ -10,6 +10,6 @@ else
     make
 fi
 
-cp ./gain-test /media/psf/Home/tftpboot/
+cp ./gain-test /mnt/hgfs/tftpboot/
 
 echo "release success"
