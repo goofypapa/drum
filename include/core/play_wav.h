@@ -1,9 +1,6 @@
 #ifndef __PLAY_WAV_H__
 #define __PLAY_WAV_H__
 
-#include <iostream>
-
-
 namespace ws_core
 {
 
@@ -39,7 +36,6 @@ namespace ws_core
 
 
     typedef struct _wav_t{
-        FILE         *fp;
         wav_riff_t   riff;
         wav_format_t format;
         wav_fact_t   fact;
@@ -47,10 +43,11 @@ namespace ws_core
         int          file_size;
         int          data_offset;
         int          data_size;
+        char *       data_buf;
     }wav_t;
 
     typedef struct _play_info{
-        const char * file_path;
+        wav_t * wav_info;
         float gain;
     }play_info;
 
@@ -59,6 +56,7 @@ namespace ws_core
     void close_wav( wav_t ** p_wav );
 
     bool play_wav( const char * p_filePath, float gain = 1.0f );
+    bool play_wav( wav_t * p_wav, float gain = 1.0f);
 }
 
 #endif //__PLAY_WAV_H__

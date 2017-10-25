@@ -21,7 +21,7 @@ int main(int argc, char ** argv)
             exit(1);
         }
 
-        ws_core::play_wav( cmd_buf );
+        ws_core::play_wav( cmd_buf, 0.8f );
     }
     return 0;
 }

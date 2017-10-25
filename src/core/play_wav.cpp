@@ -18,18 +18,38 @@ using std::string;
 namespace ws_core
 {
 
-    void * play_wav(void * p_play_info);
+    void * play_wav( void * p_play_info );
 
     bool play_wav( const char * p_filePath, float gain )
     {
+        wav_t * wav_info = open_wav( p_filePath );
+        if( !wav_info )
+        {
+            cout << "open file: " << p_filePath << " faild" << endl;
+            return false;
+        }
+
+        return play_wav( wav_info, gain );
+    }
+
+    bool play_wav( wav_t * p_wav, float gain )
+    {
         pthread_t pthread_id;
+
+        if( !p_wav )
+        {
+            cout << "p_wav is nullptr " << endl;
+            return false;
+        }
+
         play_info * data_info = (play_info *) malloc(sizeof(play_info));
-        data_info->file_path = p_filePath;
+        data_info->wav_info = p_wav;
         data_info->gain = gain;
+
 
         if( !pthread_create(&pthread_id, nullptr, play_wav, (void *)data_info) )
         {
-            cout << "playing " << p_filePath << "..." << endl;
+            cout << "playing " << "..." << endl;
         }
 
         return true;
@@ -42,9 +62,7 @@ namespace ws_core
         play_info data_info = *p_data_info;
         free(p_data_info);
 
-        cout << "data_info.file_path: " << data_info.file_path << endl;
-
-        wav_t * wav = open_wav( data_info.file_path );
+        wav_t * wav = data_info.wav_info;
         if( !wav )
         {
             return nullptr;
@@ -168,17 +186,6 @@ namespace ws_core
         size = frames * datablock; /*4 代表数据快长度*/
 
         buffer = (char *)malloc(size);
-        data =(char*)malloc(dataSize);
-
-        fseek(wav->fp, wav->data_offset, SEEK_SET);
-
-        ret = fread( data, 1, dataSize, wav->fp );
-        cout << "read size: " << ret << endl;
-        if( ret != dataSize )
-        {
-            cout << "read wav data error" << endl;
-            return nullptr;
-        }
 
         while(true)
         {
@@ -194,16 +201,18 @@ namespace ws_core
             snd_size = dataSize - playDataSize > size ? size : dataSize - playDataSize;
 
             memset( buffer, 0, size );
-            memcpy( buffer, data + playDataSize, snd_size );
+            memcpy( buffer, wav->data_buf + playDataSize, snd_size );
             playDataSize += snd_size;
 
 
             switch(bit / 8)
             {
                 case 1:
-
+                    for( char * iterator = buffer; iterator < buffer + snd_size; iterator++ )
+                    {
+                        *iterator = (char)(*iterator * data_info.gain);
+                    }
                 break;
-
                 case 2:
                     for( short * iterator = (short *)buffer; (char *)iterator < buffer + snd_size; iterator++ )
                     {
@@ -219,6 +228,12 @@ namespace ws_core
             
                         iterator[1] = tmp_bit[0];
                         iterator[2] = tmp_bit[1];
+                    }
+                break;
+                case 4:
+                    for( float * iterator = (float *)buffer; (char *)iterator < buffer + snd_size; iterator++ )
+                    {
+                        *iterator = (float)(*iterator * data_info.gain);
                     }
                 break;
             }
@@ -245,7 +260,6 @@ namespace ws_core
         cout << "play Data size: " << playDataSize << endl;
         snd_pcm_drain( handle );
         snd_pcm_close( handle );
-        free( data );
         free( buffer );
         close_wav( &wav );
 
@@ -255,6 +269,9 @@ namespace ws_core
     wav_t * open_wav( const char * p_filePath )
     {
         wav_t * wav = NULL; 
+
+
+        FILE * fp;
         
         char buffer[256];
         int  read_len = 0;
@@ -268,14 +285,14 @@ namespace ws_core
         }
         bzero(wav, sizeof(wav_t));
 
-        wav->fp = fopen(p_filePath, "rb");
-        if(!wav->fp)
+        fp = fopen(p_filePath, "rb");
+        if(!fp)
         {
             cout << "open " << p_filePath << "failed" << endl;
             return nullptr;
         }
 
-        read_len = fread(buffer, 1, 12, wav->fp);
+        read_len = fread(buffer, 1, 12, fp);
         if(read_len < 12)
         {
             cout << "error wav file" << endl;
@@ -308,7 +325,7 @@ namespace ws_core
             char id_buffer[5] = {0};
             int  tmp_size = 0;
 
-            read_len = fread(buffer, 1, 8, wav->fp);  
+            read_len = fread(buffer, 1, 8, fp);  
             if(read_len < 8)
             {
                 cout << "Error wav file" << endl;
@@ -322,7 +339,7 @@ namespace ws_core
             {
                 memcpy(wav->format.id, id_buffer, 3);
                 wav->format.size = tmp_size;
-                read_len = fread(buffer, 1, tmp_size, wav->fp);
+                read_len = fread(buffer, 1, tmp_size, fp);
                 if(read_len < tmp_size)
                 {
                     cout << "Error wav file" << endl;
@@ -347,10 +364,18 @@ namespace ws_core
             }else
             {
                 cout << "unhandled chunk: " << id_buffer << ", size: " << tmp_size << endl;
-                fseek(wav->fp, tmp_size, SEEK_CUR);
+                fseek(fp, tmp_size, SEEK_CUR);
             }
             offset += 8 + tmp_size;
         }
+
+        fseek(fp, wav->data_offset, SEEK_SET);
+        wav->data_buf = (char *)malloc( wav->data.size );
+        if( fread(wav->data_buf, 1, wav->data.size, fp) != wav->data.size )
+        {
+            cout << "read wav data faild" << endl;
+        }
+        fclose( fp );
 
         return wav;
     }
@@ -363,12 +388,11 @@ namespace ws_core
             return;
         }
 
-        
-        if(wav->fp)
+        if( wav->data_buf )
         {
-            fclose(wav->fp);
-            wav->fp = nullptr;
+            free( wav->data_buf );
         }
+
         free( wav );
         *p_wav = nullptr;
     }
