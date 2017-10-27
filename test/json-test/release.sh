@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-if [ ! -f "./wifi-test" ]
+if [ ! -f "./json-test" ]
 then
     echo "build"
     make
@@ -10,6 +10,6 @@ else
     make
 fi
 
-cp ./wifi-test /mnt/hgfs/tftpboot/
+cp ./json-test /mnt/hgfs/tftpboot/
 
 echo "release success"
