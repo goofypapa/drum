@@ -63,6 +63,7 @@ namespace ws_core
         float get_float_val( void );
         bool get_boolean_val( void );
 
+        int get_length( void );
         int get_index( node * p_node );
         NODE_TYPE get_node_type( void );
 

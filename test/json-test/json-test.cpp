@@ -75,9 +75,18 @@ int main(int argc, char ** argv)
     ->append( ws_core::create_json_node( ws_core::OBJECT )->set_key(  "array3") )
     ->append( ws_core::create_json_node( ws_core::STRING )->set_key( "empty string" ) );
 
-
-
     std::cout << "test: " << t_test_root->to_string() << std::endl;
+
+    free_json_node( &t_test_root );
+
+    t_test_root = ws_core::parse( "[1, 2, 3]" );
+
+    for( int i = 0; i < t_test_root->get_length(); ++i )
+    {
+        ws_core::node * t_item = t_test_root->get_sub_node( i );
+        std::cout << "[" << t_test_root->get_index( t_item ) << "]" << ": " << t_item->get_int_val() << std::endl;
+    }
+    
 
     char cmd_buf[2048] = {0};
 

@@ -279,6 +279,20 @@ namespace ws_core
         return false;
     }
 
+    int node::get_length( void )
+    {
+        if( m_node_type != ARRAY )
+        {
+            return 0;
+        }
+        auto t_vector = get_vector( this );
+        if( !t_vector )
+        {
+            return 0;
+        }
+        return t_vector->size();
+    }
+
     int node::get_index( node * p_node )
     {
         if( m_node_type != ARRAY || !p_node )
