@@ -67,7 +67,7 @@ int main( int argc, char ** argv )
     gettimeofday( &m_startPlayingTime, NULL );
 
 
-    int t_toneStartTime = 0, t_toneEndTime = 0;
+    int t_tonePlayTime = 0;
     int t_currNodeTime = 0;
 
     ws_core::node * t_rhythmData = m_rhythm->get_sub_node( "data" );
@@ -81,14 +81,12 @@ int main( int argc, char ** argv )
         return 0;
     }
 
-    debug() << "---------------" << std::endl;
+    // debug() << "---------------" << std::endl;
 
-    t_currNodeTime = m_beatTime / t_currNode->get_int_val( "note" );
+    // t_currNodeTime = m_beatTime / t_currNode->get_int_val( "note" );
 
-    debug() << "---------------" << std::endl;
-    t_toneStartTime = t_toneEndTime + t_currNodeTime / 2;
-    t_toneEndTime += t_currNodeTime;
-    bool t_isPlayd = false;
+    // debug() << "---------------" << std::endl;
+    t_tonePlayTime += t_currNodeTime;
 
     debug() << "---------------" << std::endl;
     while(true)
@@ -96,43 +94,32 @@ int main( int argc, char ** argv )
         gettimeofday( &m_currPlayingTime, NULL );
         int t_curr_time = (1000000 * (m_currPlayingTime.tv_sec - m_startPlayingTime.tv_sec)+ m_currPlayingTime.tv_usec - m_startPlayingTime.tv_usec) / 1000;
 
-        if( t_isPlayd )
+        if( t_curr_time >= t_tonePlayTime )
         {
-            if( t_curr_time >= t_toneEndTime )
+
+            std::string t_tone = t_currNode->get_string_val( "tone" );
+            info() << "play " << t_curr_time << t_tone;
+
+            if( t_tone == "B" )
             {
-                t_currNode = t_rhythmData->get_sub_node( ++t_currNodeIndex );
-                if( !t_currNode )
-                {
-                    break;
-                }
-                t_currNodeTime = m_beatTime / t_currNode->get_int_val( "note" );
-                t_toneStartTime = t_toneEndTime + t_currNodeTime / 2;
-                t_toneEndTime += t_currNodeTime;
-                t_isPlayd = false;
+                ws_core::play_wav( AFRICAN_DRUM_BASS, 1.0f );
             }
-        }else
-        {
-            if( t_curr_time >= t_toneStartTime )
+            if( t_tone == "T" )
             {
-
-                std::string t_tone = t_currNode->get_string_val( "tone" );
-                info() << "play " << t_tone;
-
-                if( t_tone == "B" )
-                {
-                    ws_core::play_wav( AFRICAN_DRUM_BASS, 1.0f );
-                }
-                if( t_tone == "T" )
-                {
-                    ws_core::play_wav( AFRICAN_DRUM_MEDIANT, 1.0f );
-                }
-                if( t_tone == "S" )
-                {
-                    ws_core::play_wav( AFRICAN_DRUM_HIGH, 1.0f );
-                }
-
-                t_isPlayd = true;
+                ws_core::play_wav( AFRICAN_DRUM_MEDIANT, 1.0f );
             }
+            if( t_tone == "S" )
+            {
+                ws_core::play_wav( AFRICAN_DRUM_HIGH, 1.0f );
+            }
+
+            t_tonePlayTime = t_tonePlayTime + t_currNodeTime;
+            t_currNode = t_rhythmData->get_sub_node( ++t_currNodeIndex );
+            if( !t_currNode )
+            {
+                break;
+            }
+            t_currNodeTime = m_beatTime / t_currNode->get_int_val( "note" );
         }
 
         usleep( 1000 );
