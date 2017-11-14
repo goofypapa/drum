@@ -7,6 +7,7 @@
 #include <map>
 #include <sstream>
 #include <algorithm>
+#include "ws_log.h"
 
 namespace ws_core
 {
@@ -57,7 +58,7 @@ namespace ws_core
         int err = checks( p_json, t_result );
         if( err )
         {
-            std::cout << "pase json error for: " << err << " [" << p_json[err - 1] << p_json[err] << p_json[err + 1] << "]" << std::endl;
+            err() << "format err by " << err << " " << p_json[err - 2] << p_json[err - 1] << p_json[err] << p_json[err + 1] << p_json[err + 2] << std::endl;
             free_json_node( &t_result );
         }
 
@@ -73,7 +74,7 @@ namespace ws_core
 
         if( m_node_type != OBJECT )
         {
-            std::cout << "get_sub_node( const char * ): m_node_type is not OBJECT" << std::endl;
+            err() << "node type is not object" << std::endl;
             return NULL;
         }
 
@@ -101,7 +102,7 @@ namespace ws_core
 
         if( m_node_type != ARRAY )
         {
-            std::cout << "get_sub_node( const char * ): m_node_type is not ARRAY" << std::endl;
+            err() << "node type is not array" << std::endl;
             return NULL;
         }
 
@@ -213,7 +214,7 @@ namespace ws_core
             return (char)*(char *)m_value == '\1' ? 1 : 0;
         }
 
-        std::cout << "get_int_val error: Unknown node_type" << std::endl;
+        err() << "can't convert to int" << std::endl;
         return 0;
     }
 
@@ -244,7 +245,7 @@ namespace ws_core
             return (char)*(char *)m_value == '\1' ? 1.0f : 0.0f;
         }
 
-        std::cout << "get_float_val error: Unknown node_type" << std::endl;
+        err() << "can't convert to float" << std::endl;
         return 0.0f;
     }
 
@@ -275,7 +276,12 @@ namespace ws_core
             return (char)*(char *)m_value == '\1' ? true : false;
         }
 
-        std::cout << "get_boolean_val error: Unknown node_type" << std::endl;
+        if( m_node_type == UNDEFINED )
+        {
+            return false;
+        }
+
+        err() << "can't convert to boolean" << std::endl;
         return false;
     }
 
@@ -285,7 +291,7 @@ namespace ws_core
         {
             return 0;
         }
-        auto t_vector = get_vector( this );
+        std::vector< node * > * t_vector = get_vector( this );
         if( !t_vector )
         {
             return 0;
@@ -331,7 +337,7 @@ namespace ws_core
 
         if( !p_key || !p_value )
         {
-            std::cout << "node::append( const char *, const char * ) error: parameter is null" << std::endl;
+            err() << "key or value is null" << std::endl;
             return this;
         }
         
@@ -366,7 +372,7 @@ namespace ws_core
 
         if( !p_key )
         {
-            std::cout << "node::append( const char *, const int ) error: p_key is null" << std::endl;
+            err() << "key is null" << std::endl;
             return this;
         }
         
@@ -400,7 +406,7 @@ namespace ws_core
 
         if( !p_key )
         {
-            std::cout << "node::append( const char *, const float ) error: p_key is null" << std::endl;
+            err() << "key is null" << std::endl;
             return this;
         }
         
@@ -435,7 +441,7 @@ namespace ws_core
         
         if( !p_key )
         {
-            std::cout << "node::append( const char *, const bool ) error: p_key is null" << std::endl;
+            err() << "key is null" << std::endl;
             return this;
         }
         
@@ -470,7 +476,7 @@ namespace ws_core
 
         if( !p_key )
         {
-            std::cout << "p_key is NULL" << std::endl;
+            err() << "key is null" << std::endl;
             return this;
         }
         
@@ -623,7 +629,7 @@ namespace ws_core
     {
         if( !p_key || !p_value )
         {
-            std::cout << "set_val( const char *, const char * ) error: parameter is null" << std::endl;
+            err() << "key or value is null" << std::endl;
             return this;
         }
         node * t_node = get_sub_node( p_key );
@@ -638,7 +644,7 @@ namespace ws_core
     {
         if( !p_key )
         {
-            std::cout << "set_val( const char *, const int ) error: p_key is null" << std::endl;
+            err() << "key is null" << std::endl;
             return this;
         }
         node * t_node = get_sub_node( p_key );
@@ -653,7 +659,7 @@ namespace ws_core
     {
         if( !p_key )
         {
-            std::cout << "set_val( const char *, const int ) error: p_key is null" << std::endl;
+            err() << "key is null" << std::endl;
             return this;
         }
         node * t_node = get_sub_node( p_key );
@@ -670,7 +676,7 @@ namespace ws_core
         node * t_node = get_sub_node( p_index );
         if( !t_node )
         {
-            std::cout << "set_val( const int, const char *) error: subscript out of range" << std::endl;
+            err() << "subscript out of range" << std::endl;
             return this;
         }
         t_node->set_val( p_value );
@@ -682,7 +688,7 @@ namespace ws_core
         node * t_node = get_sub_node( p_index );
         if( !t_node )
         {
-            std::cout << "set_val( const int, const int ) error: subscript out of range" << std::endl;
+            err() << "subscript out of range" << std::endl;
             return this;
         }
         t_node->set_val( p_value );
@@ -694,7 +700,7 @@ namespace ws_core
         node * t_node = get_sub_node( p_index );
         if( !t_node )
         {
-            std::cout << "set_val( const int, const float ) error: subscript out of range" << std::endl;
+            err() << "subscript out of range" << std::endl;
             return this;
         }
         t_node->set_val( p_value );
@@ -715,7 +721,7 @@ namespace ws_core
 
         if( p_node->m_value && p_node->m_node_type != OBJECT )
         {
-            std::cout << "append_node_to( node *, const char * ) warning: node_type is not object" << std::endl;
+            err() << "node type is not object" << std::endl;
             free_sub_node(p_node);
         }
 
@@ -744,7 +750,7 @@ namespace ws_core
 
         if( p_parent->m_value && p_parent->m_node_type != ARRAY )
         {
-            std::cout << "append_node_to( node * ) warning: node_type is not array" << std::endl;
+            err() << "node type is not array" << std::endl;
             return NULL;
         }
 
@@ -771,17 +777,12 @@ namespace ws_core
             return false;
         }
 
-        if( p_parent->m_node_type == OBJECT && !p_node->m_key )
-        {
-            return false;
-        }
-
         if( p_node->m_parent )
         {
             divisional( p_node->m_parent, p_node );
         }
 
-        if( p_parent->m_node_type == OBJECT )
+        if( ( p_parent->m_node_type == OBJECT || !p_parent->m_value ) && p_node->m_key )
         {
             std::map< std::string, node * > * t_map = get_map( p_parent );
             if( !t_map )
@@ -801,7 +802,7 @@ namespace ws_core
             return true;
         }
 
-        if( p_parent->m_node_type == ARRAY )
+        if( p_parent->m_node_type == ARRAY || !p_parent->m_value )
         {
             std::vector< node * > * t_vector = get_vector( p_parent );
             if( !t_vector )
@@ -812,7 +813,7 @@ namespace ws_core
             p_node->m_parent = p_parent;
             return true;
         }
-
+        err() << "append faild" << std::endl;
         return false;  
     }
 

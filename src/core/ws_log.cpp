@@ -6,7 +6,7 @@ namespace ws_core
 
     pthread_mutex_t _WS_LOG::m_mutex;
     std::ostream * _WS_LOG::m_stream = &std::cout;
-    LOG_LEVEL limit_lavel = INFO;
+    LOG_LEVEL limit_lavel = DEBUG;
 
     std::ostream & ws_log( LOG_LEVEL p_log_level, const char * p_file, const char * p_function, const int p_line )
     {
@@ -44,10 +44,11 @@ namespace ws_core
 
         t_sstr << "]";
 
-        t_sstr << " line " << p_line << " file " << p_file << " function " << p_function << ": ";
+        if( p_log_level != INFO )
+        t_sstr << " " << p_line << " " << p_file << " " << p_function << " -" << std::endl;
 
         pthread_mutex_lock( &_WS_LOG::m_mutex );
-        *_WS_LOG::m_stream << t_sstr.str();
+        *_WS_LOG::m_stream << std::endl << t_sstr.str();
         pthread_mutex_unlock( &_WS_LOG::m_mutex );
 
         return *_WS_LOG::m_stream;

@@ -68,28 +68,28 @@ namespace ws_core
             return nullptr;
         }
 
-        cout << "file size = " << wav->file_size << endl;
+        // cout << "file size = " << wav->file_size << endl;
 
-        cout << "RIFF WAVE Chunk" <<endl;
-        cout << "id: " << wav->riff.id << endl;
-        cout << "size: " << wav->riff.size << endl;
-        cout << "type: " << wav->riff.type << endl;
-        cout << endl;
+        // cout << "RIFF WAVE Chunk" <<endl;
+        // cout << "id: " << wav->riff.id << endl;
+        // cout << "size: " << wav->riff.size << endl;
+        // cout << "type: " << wav->riff.type << endl;
+        // cout << endl;
 
-        cout << "FORMAT Chunk" << endl;
-        cout << "id: " << wav->format.id << endl;
-        cout << "size: " << wav->format.size << endl;
-        cout << "Channels = " << wav->format.channels << endl;
-        cout << "SamplesPersec = " << wav->format.samples_per_sec << endl;
-        cout << "avg_bytes_per_sec = " << wav->format.avg_bytes_per_sec << endl;
-        cout << "block_align = " << wav->format.block_align << endl;
-        cout << "BitsPerSample = " << wav->format.bits_per_sample << endl;
-        cout << endl;
+        // cout << "FORMAT Chunk" << endl;
+        // cout << "id: " << wav->format.id << endl;
+        // cout << "size: " << wav->format.size << endl;
+        // cout << "Channels = " << wav->format.channels << endl;
+        // cout << "SamplesPersec = " << wav->format.samples_per_sec << endl;
+        // cout << "avg_bytes_per_sec = " << wav->format.avg_bytes_per_sec << endl;
+        // cout << "block_align = " << wav->format.block_align << endl;
+        // cout << "BitsPerSample = " << wav->format.bits_per_sample << endl;
+        // cout << endl;
 
-        cout << "DATA Chunk" << endl;
-        cout << "id: " << wav->data.id << endl;
-        cout << "data size: " << wav->data.size << endl;
-        cout << "data offset: " << wav->data_offset << endl;
+        // cout << "DATA Chunk" << endl;
+        // cout << "id: " << wav->data.id << endl;
+        // cout << "data size: " << wav->data.size << endl;
+        // cout << "data offset: " << wav->data_offset << endl;
 
         
 
@@ -257,7 +257,7 @@ namespace ws_core
             }
         }
 
-        cout << "play Data size: " << playDataSize << endl;
+        // cout << "play Data size: " << playDataSize << endl;
         snd_pcm_drain( handle );
         snd_pcm_close( handle );
         free( buffer );

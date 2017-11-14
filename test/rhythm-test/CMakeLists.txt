@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(json-test VERSION 0.0.0)
+project(rhythm-test VERSION 0.0.0)
 
 option(X86_64 "编译x86_64架构程序" OFF)
 
@@ -18,12 +18,13 @@ include_directories(../../include)
 include_directories(../../include/core)
 include_directories(../../deps)
 
-link_libraries(pthread)
+link_libraries(pthread asound)
 
-add_executable(json-test json-test.cpp
-                        ../../src/core/json.cpp
-                        ../../src/core/ws_log.cpp
-                        )
+add_executable(rhythm-test rhythm-test.cpp 
+                ../../src/core/ws_log.cpp
+                ../../src/core/json.cpp
+                ../../src/core/play_wav.cpp
+)
 
 if(NOT X86_64)
     file( COPY ./release.sh DESTINATION ./)

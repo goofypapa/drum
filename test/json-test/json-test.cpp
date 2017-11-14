@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <sys/time.h>
+#include "ws_log.h"
 
 int main(int argc, char ** argv)
 {
@@ -28,20 +29,19 @@ int main(int argc, char ** argv)
     ws_core::node * tmp = ws_core::parse( json[0] );
     gettimeofday(&t_end,NULL);
 
-    std::cout << "parse time: " << 1000000 * (t_end.tv_sec - t_start.tv_sec)+ t_end.tv_usec - t_start.tv_usec << std::endl;
-
+    debug() << "parse time: " << 1000000 * (t_end.tv_sec - t_start.tv_sec)+ t_end.tv_usec - t_start.tv_usec << std::endl;
 
     gettimeofday(&t_start,NULL);
-    std::cout << tmp->to_string() << std::endl;
+    debug() << tmp->to_string() << std::endl;
     gettimeofday(&t_end,NULL);
 
-    std::cout << "tostring time: " << 1000000 * (t_end.tv_sec - t_start.tv_sec)+ t_end.tv_usec - t_start.tv_usec << std::endl;
+    debug() << "tostring time: " << 1000000 * (t_end.tv_sec - t_start.tv_sec)+ t_end.tv_usec - t_start.tv_usec << std::endl;
 
 
     gettimeofday(&t_start,NULL);
     free_json_node( &tmp );
     gettimeofday(&t_end,NULL);
-    std::cout << "free time: " << 1000000 * (t_end.tv_sec - t_start.tv_sec)+ t_end.tv_usec - t_start.tv_usec << std::endl;
+    debug() << "free time: " << 1000000 * (t_end.tv_sec - t_start.tv_sec)+ t_end.tv_usec - t_start.tv_usec << std::endl;
 
     //测试生成JSON
     t_root = ws_core::parse( "{ root: 12 }" );
@@ -51,7 +51,7 @@ int main(int argc, char ** argv)
                     ->append("xiaowu", ws_core::STRING)->get_sub_node("xiaowu")->set_val("厉害了")->parent()
                     ->append( ws_core::create_json_node()->set_key( "abc" )->set_val(false) );
 
-    std::cout << "myJson: " << t_root->to_string() << std::endl;
+    debug() << "myJson: " << t_root->to_string() << std::endl;
 
     ws_core::free_json_node( &t_root );
 
@@ -75,7 +75,7 @@ int main(int argc, char ** argv)
     ->append( ws_core::create_json_node( ws_core::OBJECT )->set_key(  "array3") )
     ->append( ws_core::create_json_node( ws_core::STRING )->set_key( "empty string" ) );
 
-    std::cout << "test: " << t_test_root->to_string() << std::endl;
+    debug() << "test: " << t_test_root->to_string() << std::endl;
 
     free_json_node( &t_test_root );
 
@@ -84,7 +84,7 @@ int main(int argc, char ** argv)
     for( int i = 0; i < t_test_root->get_length(); ++i )
     {
         ws_core::node * t_item = t_test_root->get_sub_node( i );
-        std::cout << "[" << t_test_root->get_index( t_item ) << "]" << ": " << t_item->get_int_val() << std::endl;
+        debug() << "[" << t_test_root->get_index( t_item ) << "]" << ": " << t_item->get_int_val() << std::endl;
     }
     
 

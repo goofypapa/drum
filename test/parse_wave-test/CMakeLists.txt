@@ -18,9 +18,18 @@ include_directories(../../include)
 include_directories(../../include/core)
 include_directories(../../deps)
 
-# link_libraries(pthread)
+link_libraries(pthread asound)
 
-add_executable(parse_wave-test parse_wave-test.cpp)
+add_executable(parse_wave-test parse_wave-test.cpp
+                                ../../src/core/ws_log.cpp
+                                ../../src/core/json.cpp
+                                )
+
+add_executable(parse_wave_play-test play.cpp
+                ../../src/core/ws_log.cpp
+                ../../src/core/json.cpp
+                ../../src/core/play_wav.cpp
+)
 
 if(NOT X86_64)
     file( COPY ./release.sh DESTINATION ./)
