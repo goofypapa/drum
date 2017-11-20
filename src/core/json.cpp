@@ -1545,7 +1545,7 @@ namespace ws_core
             }
         }
 
-        if( p_val_end < p_val_start )
+        if( p_val_end < p_val_start && p_node->m_node_type != STRING || p_node->m_node_type == STRING && p_val_end - p_val_start < -1 )
         {
             return p_val_start;
         }

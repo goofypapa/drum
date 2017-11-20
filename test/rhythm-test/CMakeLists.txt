@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(rhythm-test VERSION 0.0.0)
 
-option(X86_64 "编译x86_64架构程序" OFF)
+option(X86_64 "编译x86_64架构程序" ON)
 
 set(CMAKE_C_COMPILER arm-linux-gcc)
 set(CMAKE_CXX_COMPILER arm-linux-g++)
@@ -18,13 +18,18 @@ include_directories(../../include)
 include_directories(../../include/core)
 include_directories(../../deps)
 
-link_libraries(pthread asound)
-
 add_executable(rhythm-test rhythm-test.cpp 
                 ../../src/core/ws_log.cpp
                 ../../src/core/json.cpp
                 ../../src/core/play_wav.cpp
 )
+
+add_executable(rhythm_parse rhythm_parse.cpp 
+                ../../src/core/ws_log.cpp
+                ../../src/core/json.cpp
+)
+
+target_link_libraries(rhythm-test pthread asound)
 
 if(NOT X86_64)
     file( COPY ./release.sh DESTINATION ./)
