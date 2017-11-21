@@ -31,10 +31,16 @@ int main( int argc, char ** argv )
     //每拍时间　单位毫秒
     int m_beatTime = 0;
 
-    std::ifstream ifs( RHYTHM_FILE, std::ifstream::in );
+    const char * t_openFile = RHYTHM_FILE;
+    if( argc > 1 )
+    {
+        t_openFile = argv[1];
+    }
+
+    std::ifstream ifs( t_openFile, std::ifstream::in );
     if( !ifs.is_open() )
     {
-        err() << "open file faild: " << RHYTHM_FILE << std::endl;
+        err() << "open file faild: " << t_openFile << std::endl;
         return 2;
     }
 

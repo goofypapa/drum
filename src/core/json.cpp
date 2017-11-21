@@ -56,7 +56,7 @@ namespace ws_core
         t_result->m_key = NULL;
 
         int err = checks( p_json, t_result );
-        if( err )
+        if( err >= 0 )
         {
             err() << "format err by " << err << " " << p_json[err - 2] << p_json[err - 1] << p_json[err] << p_json[err + 1] << p_json[err + 2] << std::endl;
             free_json_node( &t_result );
@@ -152,7 +152,7 @@ namespace ws_core
     }
 
     std::string node::get_string_val( void )
-    {  
+    {
         if( !this || !m_value )
         {
             return NULL;
@@ -227,7 +227,7 @@ namespace ws_core
 
         if( m_node_type == STRING )
         {
-            return atof( (char *)m_value );
+            return (float)atof( (char *)m_value );
         }
 
         if( m_node_type == INT )
@@ -314,7 +314,7 @@ namespace ws_core
             return -1;
         }
 
-        return it - t_vector->begin();
+        return (int)(it - t_vector->begin());
     }
 
     NODE_TYPE node::get_node_type( void )
@@ -340,7 +340,7 @@ namespace ws_core
             err() << "key or value is null" << std::endl;
             return this;
         }
-        
+
         t_node = append_node_to(this, p_key);
         if( !t_node )
         {
@@ -354,7 +354,7 @@ namespace ws_core
     node * node::append( const char * p_value )
     {
         node * t_node = NULL;
-        
+
         t_node = append_node_to(this);
         if( !t_node )
         {
@@ -375,7 +375,7 @@ namespace ws_core
             err() << "key is null" << std::endl;
             return this;
         }
-        
+
         t_node = append_node_to(this, p_key);
         if( !t_node )
         {
@@ -389,7 +389,7 @@ namespace ws_core
     node * node::append( const int p_value )
     {
         node * t_node = NULL;
-        
+
         t_node = append_node_to(this);
         if( !t_node )
         {
@@ -409,7 +409,7 @@ namespace ws_core
             err() << "key is null" << std::endl;
             return this;
         }
-        
+
         t_node = append_node_to(this, p_key);
         if( !t_node )
         {
@@ -423,7 +423,7 @@ namespace ws_core
     node * node::append( const float p_value )
     {
         node * t_node = NULL;
-        
+
         t_node = append_node_to(this);
         if( !t_node )
         {
@@ -438,13 +438,13 @@ namespace ws_core
     node * node::append( const char * p_key, const bool p_value )
     {
         node * t_node = NULL;
-        
+
         if( !p_key )
         {
             err() << "key is null" << std::endl;
             return this;
         }
-        
+
         t_node = append_node_to(this, p_key);
         if( !t_node )
         {
@@ -458,7 +458,7 @@ namespace ws_core
     node * node::append( const bool p_value )
     {
         node * t_node = NULL;
-        
+
         t_node = append_node_to(this);
         if( !t_node )
         {
@@ -479,7 +479,7 @@ namespace ws_core
             err() << "key is null" << std::endl;
             return this;
         }
-        
+
         t_node = append_node_to(this, p_key);
         if( !t_node )
         {
@@ -505,7 +505,7 @@ namespace ws_core
         {
             return this;
         }
-        
+
         std::map< std::string, node * > * t_map = get_map( this );
         std::map< std::string, node * >::iterator it = t_map->find( std::string( p_key ) );
 
@@ -513,7 +513,7 @@ namespace ws_core
         {
             return this;
         }
-        
+
         node * t_rm_node = it->second;
         t_map->erase( it );
         free_node( t_rm_node );
@@ -584,7 +584,7 @@ namespace ws_core
             {
                 return true;
             }
-            
+
             t_vector->erase( it );
             p_node->m_parent = NULL;
             return true;
@@ -608,7 +608,7 @@ namespace ws_core
             free( m_key );
         }
 
-        int p_key_len = strlen(p_key);
+        int p_key_len = (int)strlen(p_key);
         if( !p_key || !p_key_len )
         {
             m_key = NULL;
@@ -616,12 +616,12 @@ namespace ws_core
         }
         m_key = (char *)malloc( p_key_len + 1 );
         memcpy( m_key, p_key, p_key_len + 1 );
-        
+
         if( t_flag )
         {
             m_parent->append( this );
         }
-        
+
         return this;
     }
 
@@ -712,7 +712,7 @@ namespace ws_core
     {
         node * result = NULL;
         std::map< std::string, node * > * t_map = NULL;
-        int t_key_len = strlen( p_key );
+        int t_key_len = (int)strlen( p_key );
 
         if( !p_node || !p_key || !t_key_len )
         {
@@ -754,7 +754,7 @@ namespace ws_core
             return NULL;
         }
 
-        
+
         t_vector = get_vector( p_parent );
         if( !t_vector )
         {
@@ -789,7 +789,7 @@ namespace ws_core
             {
                 return false;
             }
-            
+
             std::map< std::string, node * >::iterator it = t_map->find( std::string( p_node->m_key ) );
             if( it != t_map->end() )
             {
@@ -814,14 +814,14 @@ namespace ws_core
             return true;
         }
         err() << "append faild" << std::endl;
-        return false;  
+        return false;
     }
 
     node * node::set_val( const char * p_value )
     {
         free_sub_node(this);
         m_node_type = STRING;
-        int t_str_len = strlen( p_value );
+        int t_str_len = (int)strlen( p_value );
         char * t_val = (char *)malloc( t_str_len + 1 );
         memcpy( t_val, p_value, t_str_len + 1 );
         m_value = (void *)t_val;
@@ -863,7 +863,7 @@ namespace ws_core
         free_sub_node(this);
         return this;
     }
-    
+
     std::string node::to_string( void )
     {
         std::stringstream ssresult;
@@ -890,7 +890,7 @@ namespace ws_core
     int checks( const char * p_json, node * p_parent )
     {
         int t_offset = 0;
-        
+
         return _checks( p_json, t_offset, p_parent );
     }
 
@@ -898,7 +898,7 @@ namespace ws_core
     {
         node * t_node = NULL;
 
-        int t_json_len = strlen(p_json);
+        int t_json_len = (int)strlen(p_json);
 
         flags t_flags;
         t_flags.m_is_key = 0;
@@ -912,7 +912,6 @@ namespace ws_core
 
         char t_is_brace = 0;
         char t_is_bracket = 0;
-        char t_is_comma = 0;
         int t_key_start = -1;
         int t_key_end = -1;
         int t_val_start = -1;
@@ -948,7 +947,7 @@ namespace ws_core
             {
                 if( data == '\n' )
                 {
-                    t_flags.m_is_single_comments = 0; 
+                    t_flags.m_is_single_comments = 0;
                 }
                 continue;
             }
@@ -1032,7 +1031,7 @@ namespace ws_core
                     case '\n':
                     case ':':
                     break;
-    
+
                     default:
                     return p_offset;
                 }
@@ -1062,12 +1061,12 @@ namespace ws_core
                                     return t_key_start;
                                 }
                             }
-                            
+
                             if( p_parent && !t_node )
                             {
                                 //创建节点
                                 t_node = create_json_node();
-                            
+
                                 //赋值name
                                 int t_key_len = t_key_end - t_key_start + 1;
                                 t_node->m_key = (char *)malloc( t_key_len + 1 );
@@ -1087,7 +1086,7 @@ namespace ws_core
                     return p_offset;
                     case ',':
                         if( !t_flags.m_is_key && t_val_start >= 0 || t_val_start < -1 )
-                        {                            
+                        {
                             if( t_val_start >= 0 && parse_val( p_json, p_offset, t_val_start, t_val_end, t_node ) )
                             {
                                 return p_offset;
@@ -1108,7 +1107,7 @@ namespace ws_core
                             return p_offset;
                         }
 
-                        if( _checks( p_json, p_offset, t_node ) )
+                        if( _checks( p_json, p_offset, t_node ) >= 0 )
                         {
                             return p_offset;
                         }
@@ -1123,7 +1122,7 @@ namespace ws_core
                         }
                         t_node = NULL;
                         t_flags.m_is_key = 0;
-                    return 0;
+                    return -1;
                 }
             }
 
@@ -1150,7 +1149,7 @@ namespace ws_core
                             p_parent->append( t_node );
                         }
 
-                        if( _checks( p_json, p_offset, t_node ) )
+                        if( _checks( p_json, p_offset, t_node ) >= 0 )
                         {
                             return p_offset;
                         }
@@ -1160,13 +1159,13 @@ namespace ws_core
                     continue;
                     case ']':
                         if( !t_flags.m_is_key && t_val_start >= 0 )
-                        {    
+                        {
                             if(  p_parent && !t_node )
                             {
                                 t_node = create_json_node();
 
                                 p_parent->append( t_node );
-                            }                  
+                            }
                             if( parse_val( p_json, p_offset, t_val_start, t_val_end, t_node ) )
                             {
                                 return p_offset;
@@ -1175,7 +1174,7 @@ namespace ws_core
                         t_val_start = -1;
                         t_node = NULL;
                         t_flags.m_is_key = 0;
-                    return 0;
+                    return -1;
                     case ',':
                         //next value
                         if( !t_flags.m_is_key && t_val_start >= 0 )
@@ -1185,7 +1184,7 @@ namespace ws_core
                                 t_node = create_json_node();
                                 p_parent->append( t_node );
                             }
-                            
+
                             if( t_val_start >= 0 && parse_val( p_json, p_offset, t_val_start, t_val_end, t_node ) )
                             {
                                 return p_offset;
@@ -1248,7 +1247,7 @@ namespace ws_core
                         if( !t_val_end )
                         {
                             t_val_end = p_offset -1;
-                        }  
+                        }
                     continue;
 
                     case '{':
@@ -1271,7 +1270,7 @@ namespace ws_core
                     {
                         t_node = create_json_node();
                     }
-                    t_node->m_node_type = STRING;  
+                    t_node->m_node_type = STRING;
                 }
             }
 
@@ -1348,7 +1347,8 @@ namespace ws_core
                 t_val_start = p_offset + 1;
             }
         }
-        
+
+        return -1;
     }
 
     void free_node( node * p_node )
@@ -1490,7 +1490,7 @@ namespace ws_core
         }else if( p_node->m_node_type == ARRAY )
         {
             p_output << "[";
-            
+
             if( p_node->m_value )
             {
                 std::vector< node * > * t_vector = get_vector( p_node );
@@ -1583,12 +1583,12 @@ namespace ws_core
                     {
                         continue;
                     }
-    
+
                     if( t_e_index && i == t_e_index + 1 && ( t_str_val[i] == '-' || t_str_val[i] == '+' ) )
                     {
                         continue;
                     }
-    
+
                     switch( t_str_val[i] )
                     {
                         case '-':
@@ -1617,12 +1617,12 @@ namespace ws_core
                         return p_val_start + i;
                     }
                 }
-    
+
                 if( t_dot_index >= 0 )
                 {
                     p_node->m_node_type = FLOAT;
                     float * t_val = (float *)malloc( sizeof( float ) );
-                    *t_val = atof( t_str_val );
+                    *t_val = (float)atof( t_str_val );
                     p_node->m_value = ( void * )t_val;
                 }else
                 {
@@ -1633,12 +1633,12 @@ namespace ws_core
                 }
             }
         }
-        
+
         if( !p_node || p_node->m_node_type != STRING )
         {
             free( t_str_val );
         }
-        
+
         p_val_start = -1;
         p_val_end = -1;
 
